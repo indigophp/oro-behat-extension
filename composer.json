@@ -1,0 +1,42 @@
+{
+    "name": "indigophp/oro-behat-extension",
+    "type": "behat-extension",
+    "description": "Behat extension for Oro Platform",
+    "license": "MIT",
+    "keywords": ["behat", "oro"],
+    "homepage": "http://indigophp.com",
+    "authors": [
+        {
+            "name": "Márk Sági-Kazár",
+            "email": "mark.sagikazar@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.orocrm.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "oro/platform": "*",
+        "behat/behat": "^3.0",
+        "behat/symfony2-extension": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Indigo\\Oro\\Behat\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "",
+        "test-ci": ""
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}
