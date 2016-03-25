@@ -97,8 +97,8 @@ class OroContext implements KernelAwareContext
             $nonce = uniqid();
         }
 
-        $created  = date('c');
-        $digest   = base64_encode(sha1(base64_decode($nonce) . $created . $userPassword, true));
+        $created = date('c');
+        $digest = base64_encode(sha1(base64_decode($nonce).$created.$userPassword, true));
         $wsseHeader = [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_Authorization' => 'WSSE profile="UsernameToken"',
@@ -108,7 +108,7 @@ class OroContext implements KernelAwareContext
                 $digest,
                 $nonce,
                 $created
-            )
+            ),
         ];
 
         return $wsseHeader;
