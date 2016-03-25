@@ -6,7 +6,6 @@ use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use Oro\Bundle\SearchBundle\Engine\EngineInterface;
 use Oro\Bundle\TestFrameworkBundle\Test\Client;
-use Oro\Bundle\TestFrameworkBundle\Test\WebTestCase;
 
 /**
  * Context containing Oro hooks.
@@ -16,6 +15,10 @@ use Oro\Bundle\TestFrameworkBundle\Test\WebTestCase;
 class OroContext implements KernelAwareContext
 {
     use KernelDictionary;
+
+    /** Default WSSE credentials */
+    const USER_NAME = 'admin';
+    const USER_PASSWORD = 'admin_api_key';
 
     /**
      * @BeforeScenario @dbIsolation
@@ -55,7 +58,7 @@ class OroContext implements KernelAwareContext
     {
         $client = $this->getClient();
 
-        $client->setServerParameters(WebTestCase::generateWsseAuthHeader());
+        $client->setServerParameters($this->generateWsseAuthHeader());
     }
 
     /**
@@ -72,5 +75,42 @@ class OroContext implements KernelAwareContext
         }
 
         return $client;
+    }
+
+    /**
+     * Generates WSSE Auth header.
+     *
+     * {@link \Oro\Bundle\TestFrameworkBundle\Test\WebTestCase}
+     *
+     * @param string      $userName
+     * @param string      $userPassword
+     * @param string|null $nonce
+     *
+     * @return array
+     */
+    private function generateWsseAuthHeader(
+        $userName = self::USER_NAME,
+        $userPassword = self::USER_PASSWORD,
+        $nonce = null
+    ) {
+        if (null === $nonce) {
+            $nonce = uniqid();
+        }
+
+        $created  = date('c');
+        $digest   = base64_encode(sha1(base64_decode($nonce) . $created . $userPassword, true));
+        $wsseHeader = [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_Authorization' => 'WSSE profile="UsernameToken"',
+            'HTTP_X-WSSE' => sprintf(
+                'UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"',
+                $userName,
+                $digest,
+                $nonce,
+                $created
+            )
+        ];
+
+        return $wsseHeader;
     }
 }
