@@ -21,13 +21,16 @@ class OroContext implements KernelAwareContext
     const USER_PASSWORD = 'admin_api_key';
 
     /**
+     * @var Client
+     */
+    private $client;
+
+    /**
      * @BeforeScenario @dbIsolation
      */
     public function startTransaction()
     {
-        $client = $this->getClient();
-
-        $client->startTransaction();
+        $this->getClient()->startTransaction();
     }
 
     /**
@@ -35,9 +38,7 @@ class OroContext implements KernelAwareContext
      */
     public function rollbackTransaction()
     {
-        $client = $this->getClient();
-
-        $client->rollbackTransaction();
+        $this->getClient()->rollbackTransaction();
     }
 
     /**
@@ -46,7 +47,7 @@ class OroContext implements KernelAwareContext
     public function reindex()
     {
         /** @var EngineInterface $searchEngine */
-        $searchEngine = $client = $this->getContainer()->get('oro_search.search.engine');
+        $searchEngine = $this->getContainer()->get('oro_search.search.engine');
 
         $searchEngine->reindex();
     }
@@ -56,9 +57,7 @@ class OroContext implements KernelAwareContext
      */
     public function setWsseHeader()
     {
-        $client = $this->getClient();
-
-        $client->setServerParameters($this->generateWsseAuthHeader());
+        $this->getClient()->setServerParameters($this->generateWsseAuthHeader());
     }
 
     /**
@@ -66,15 +65,17 @@ class OroContext implements KernelAwareContext
      *
      * @return Client
      */
-    protected function getClient()
+    public function getClient()
     {
-        $client = $this->getContainer()->get('test.client');
+        if (null === $this->client) {
+            $this->client = $this->getContainer()->get('test.client');
 
-        if (false === $client instanceof Client) {
-            throw new \RuntimeException('The test client must be an instance of Oro\Bundle\TestFrameworkBundle\Test\Client');
+            if (false === $this->client instanceof Client) {
+                throw new \RuntimeException('The test client must be an instance of Oro\Bundle\TestFrameworkBundle\Test\Client');
+            }
         }
 
-        return $client;
+        return $this->client;
     }
 
     /**
@@ -88,7 +89,7 @@ class OroContext implements KernelAwareContext
      *
      * @return array
      */
-    private function generateWsseAuthHeader(
+    public function generateWsseAuthHeader(
         $userName = self::USER_NAME,
         $userPassword = self::USER_PASSWORD,
         $nonce = null
