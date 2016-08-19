@@ -28,22 +28,6 @@ class OroContextSpec extends ObjectBehavior
         $this->shouldImplement('Behat\Symfony2Extension\Context\KernelAwareContext');
     }
 
-    function it_starts_a_transaction(Client $client, ContainerInterface $container)
-    {
-        $client->startTransaction()->shouldBeCalled();
-        $container->get('test.client')->willReturn($client);
-
-        $this->startTransaction();
-    }
-
-    function it_rolls_a_transaction_back(Client $client, ContainerInterface $container)
-    {
-        $client->rollbackTransaction()->shouldBeCalled();
-        $container->get('test.client')->willReturn($client);
-
-        $this->rollbackTransaction();
-    }
-
     function it_reindexes_the_database(EngineInterface $searchEngine, ContainerInterface $container)
     {
         $searchEngine->reindex()->shouldBeCalled();

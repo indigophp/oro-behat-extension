@@ -6,6 +6,7 @@ use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use Oro\Bundle\SearchBundle\Engine\EngineInterface;
 use Oro\Bundle\TestFrameworkBundle\Test\Client;
+use Oro\Component\Testing\DbIsolationExtension;
 
 /**
  * Context containing Oro hooks.
@@ -15,30 +16,26 @@ use Oro\Bundle\TestFrameworkBundle\Test\Client;
 class OroContext implements KernelAwareContext
 {
     use KernelDictionary;
+    use DbIsolationExtension;
 
     /** Default WSSE credentials */
     const USER_NAME = 'admin';
     const USER_PASSWORD = 'admin_api_key';
 
     /**
-     * @var Client
-     */
-    private $client;
-
-    /**
      * @BeforeScenario @dbIsolation
      */
-    public function startTransaction()
+    public function _startTransaction()
     {
-        $this->getClient()->startTransaction();
+        $this->startTransaction();
     }
 
     /**
      * @AfterScenario @dbIsolation
      */
-    public function rollbackTransaction()
+    public function _rollbackTransaction()
     {
-        $this->getClient()->rollbackTransaction();
+        $this->rollbackTransaction();
     }
 
     /**
@@ -67,15 +64,7 @@ class OroContext implements KernelAwareContext
      */
     public function getClient()
     {
-        if (null === $this->client) {
-            $this->client = $this->getContainer()->get('test.client');
-
-            if (false === $this->client instanceof Client) {
-                throw new \RuntimeException('The test client must be an instance of Oro\Bundle\TestFrameworkBundle\Test\Client');
-            }
-        }
-
-        return $this->client;
+        return $this->getContainer()->get('test.client');
     }
 
     /**
