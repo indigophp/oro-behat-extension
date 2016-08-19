@@ -13,6 +13,10 @@
     ],
     "repositories": [
         {
+            "type": "git",
+            "url": "https://github.com/orocrm/TranslationFormBundle.git"
+        },
+        {
             "type": "composer",
             "url": "https://packagist.orocrm.com"
         }
@@ -34,11 +38,11 @@
     },
     "scripts": {
         "test": "vendor/bin/phpspec run",
-        "test-ci": "vendor/bin/phpspec run -c phpspec.yml.ci"
+        "test-ci": "vendor/bin/phpspec run -c phpspec.ci.yml"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3-dev"
+            "dev-master": "0.4-dev"
         }
     },
     "prefer-stable": true,
